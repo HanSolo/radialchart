@@ -3,6 +3,9 @@ package eu.hansolo.fx.radialchart;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
@@ -34,6 +37,9 @@ public class Demo extends Application {
         chartData4 = new ChartData("Singapore", 13.0, Color.MAGENTA);
 
         graph      = new RadialChart(chartData1, chartData2, chartData3, chartData4);
+        graph.setBackground(new Background(new BackgroundFill(Color.rgb(90, 90, 90), CornerRadii.EMPTY, Insets.EMPTY)));
+        graph.setBarBorderColor(Color.rgb(255, 255, 255, 0.1));
+        graph.setTextColor(Color.WHITE);
 
         lastTimerCall = System.nanoTime();
         timer = new AnimationTimer() {
@@ -52,6 +58,7 @@ public class Demo extends Application {
     @Override public void start(Stage stage) {
         StackPane pane = new StackPane(graph);
         pane.setPadding(new Insets(10));
+        pane.setBackground(new Background(new BackgroundFill(Color.rgb(40, 40, 40), CornerRadii.EMPTY, Insets.EMPTY)));
 
         Scene scene = new Scene(pane);
 

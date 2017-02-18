@@ -1,6 +1,8 @@
 package eu.hansolo.fx.radialchart;
 
 import javafx.beans.DefaultProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -54,6 +56,8 @@ public class RadialChart extends Region {
     private              ObservableList<ChartData>     dataList;
     private              ListChangeListener<ChartData> chartDataListener;
     private              ChartDataEventListener        chartEventListener;
+    private              ObjectProperty<Color>         barBorderColor;
+    private              ObjectProperty<Color>         textColor;
 
 
     // ******************** Constructors **************************************
@@ -65,6 +69,16 @@ public class RadialChart extends Region {
         borderPaint        = Color.TRANSPARENT;
         borderWidth        = 0d;
         dataList           = null == DATA ? FXCollections.observableArrayList() : FXCollections.observableArrayList(DATA);
+        barBorderColor     = new ObjectPropertyBase<Color>(Color.LIGHTGRAY) {
+            @Override protected void invalidated() { redraw(); }
+            @Override public Object getBean() { return RadialChart.this; }
+            @Override public String getName() { return "barBorderColor"; }
+        };
+        textColor          = new ObjectPropertyBase<Color>(Color.BLACK) {
+            @Override protected void invalidated() { redraw(); }
+            @Override public Object getBean() { return RadialChart.this; }
+            @Override public String getName() { return "textColor"; }
+        };
         chartEventListener = e -> drawChart();
         dataList.forEach(chartData -> chartData.addChartDataEventListener(chartEventListener));
         chartDataListener  = c -> {
@@ -127,6 +141,14 @@ public class RadialChart extends Region {
     public void removeChartData(final ChartData DATA) { dataList.remove(DATA); }
     public void clearChartData() { dataList.clear(); }
 
+    public Color getTextColor() { return textColor.get(); }
+    public void setTextColor(final Color COLOR) { textColor.set(COLOR); }
+    public ObjectProperty<Color> textColorProperty() { return textColor; }
+
+    public Color getBarBorderColor() { return barBorderColor.get(); }
+    public void setBarBorderColor(final Color COLOR) { barBorderColor.set(COLOR); }
+    public ObjectProperty<Color> barBorderColorProperty() { return barBorderColor; }
+
     private void drawChart() {
         double          radius         = size * 0.5;
         double          innerSpacer    = radius * 0.18;
@@ -135,19 +157,19 @@ public class RadialChart extends Region {
         int             noOfItems      = dataList.size();
         double          max            = dataList.stream().max(Comparator.comparingDouble(ChartData::getValue)).get().getValue();
 
-        double     nameX          = radius * 0.975;
-        double     nameWidth      = radius * 0.95;
-        double     valueY         = radius * 0.95;
-        double     valueWidth     = barWidth * 0.9;
+        double          nameX          = radius * 0.975;
+        double          nameWidth      = radius * 0.95;
+        double          valueY         = radius * 0.94;
+        double          valueWidth     = barWidth * 0.9;
 
         ctx.clearRect(0, 0, size, size);
         ctx.setLineCap(StrokeLineCap.BUTT);
-        ctx.setFill(Color.BLACK);
+        ctx.setFill(getTextColor());
         ctx.setTextAlign(TextAlignment.RIGHT);
         ctx.setTextBaseline(VPos.CENTER);
         ctx.setFont(Font.font(barWidth * 0.5));
 
-        ctx.setStroke(Color.LIGHTGRAY);
+        ctx.setStroke(getBarBorderColor());
         ctx.setLineWidth(1);
         ctx.strokeLine(radius, 0, radius, radius - barWidth * 0.875);
         ctx.strokeLine(0, radius, radius - barWidth * 0.875, radius);
@@ -165,7 +187,7 @@ public class RadialChart extends Region {
 
             // Background
             ctx.setLineWidth(1);
-            ctx.setStroke(Color.LIGHTGRAY);
+            ctx.setStroke(getBarBorderColor());
             ctx.strokeArc(bkgXY, bkgXY, bkgWH, bkgWH, 90, -270, ArcType.OPEN);
 
             // DataBar
