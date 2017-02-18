@@ -1,0 +1,72 @@
+package eu.hansolo.fx.radialchart;
+
+import javafx.animation.AnimationTimer;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
+import javafx.scene.Scene;
+
+import java.util.Random;
+
+
+/**
+ * User: hansolo
+ * Date: 17.02.17
+ * Time: 15:31
+ */
+public class Demo extends Application {
+    private static final Random RND = new Random();
+    private RadialChart    graph;
+    private long           lastTimerCall;
+    private AnimationTimer timer;
+    private ChartData      chartData1;
+    private ChartData      chartData2;
+    private ChartData      chartData3;
+    private ChartData      chartData4;
+
+
+    @Override public void init() {
+        chartData1 = new ChartData("Switzerland", 24.0, Color.LIGHTBLUE);
+        chartData2 = new ChartData("Germany", 10.0, Color.LIME);
+        chartData3 = new ChartData("Belgium", 12.0, Color.CRIMSON);
+        chartData4 = new ChartData("Singapore", 13.0, Color.MAGENTA);
+
+        graph      = new RadialChart(chartData1, chartData2, chartData3, chartData4);
+
+        lastTimerCall = System.nanoTime();
+        timer = new AnimationTimer() {
+            @Override public void handle(final long now) {
+                if (now > lastTimerCall + 3_000_000_000l) {
+                    chartData1.setValue(RND.nextDouble() * 30);
+                    chartData2.setValue(RND.nextDouble() * 30);
+                    chartData3.setValue(RND.nextDouble() * 30);
+                    chartData4.setValue(RND.nextDouble() * 30);
+                    lastTimerCall = now;
+                }
+            }
+        };
+    }
+
+    @Override public void start(Stage stage) {
+        StackPane pane = new StackPane(graph);
+        pane.setPadding(new Insets(10));
+
+        Scene scene = new Scene(pane);
+
+        stage.setTitle("Radial Chart");
+        stage.setScene(scene);
+        stage.show();
+
+        timer.start();
+    }
+
+    @Override public void stop() {
+        System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
