@@ -1,6 +1,6 @@
-##RadialChart
+## RadialChart
 A JavaFX RadialChart control.
 
-##Overview
+## Overview
 ![RadialChart](https://dl.dropboxusercontent.com/u/84552/radialchart.png)
 
